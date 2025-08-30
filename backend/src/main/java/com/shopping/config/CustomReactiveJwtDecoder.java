@@ -25,11 +25,11 @@ public class CustomReactiveJwtDecoder implements ReactiveJwtDecoder {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
             
-            Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
+            Claims claims = Jwts.parser()
+                .verifyWith(key)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
             
             Map<String, Object> headers = Map.of("alg", "HS256", "typ", "JWT");
             

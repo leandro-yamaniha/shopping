@@ -2,8 +2,8 @@ package com.shopping.controller;
 
 import com.shopping.model.Product;
 import com.shopping.service.ProductService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,14 +14,17 @@ import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/products")
-@RequiredArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:19006"})
 public class ProductController {
     
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     private final ProductService productService;
+    
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
     
     @GetMapping
     public Flux<Product> getAllProducts(

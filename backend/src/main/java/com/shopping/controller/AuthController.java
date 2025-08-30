@@ -6,6 +6,12 @@ import com.shopping.dto.RegisterRequest;
 import com.shopping.model.User;
 import com.shopping.service.JwtService;
 import com.shopping.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,11 +26,21 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:19006"})
+@Tag(name = "Autenticação", description = "Endpoints para autenticação e registro de usuários")
 public class AuthController {
     
     private final UserService userService;
     private final JwtService jwtService;
     
+    @Operation(summary = "Registrar novo usuário", description = "Cria uma nova conta de usuário no sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuário registrado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class))),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos ou email já existe",
+                content = @Content),
+        @ApiResponse(responseCode = "500", description = "Erro interno do servidor",
+                content = @Content)
+    })
     @PostMapping("/register")
     public Mono<ResponseEntity<LoginResponse>> register(@Valid @RequestBody RegisterRequest request) {
         log.info("POST /api/auth/register - Registering user: {}", request.getEmail());
@@ -61,6 +77,17 @@ public class AuthController {
                 ResponseEntity.badRequest().build());
     }
     
+    @Operation(summary = "Fazer login", description = "Autentica um usuário e retorna um token JWT")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login realizado com sucesso",
+                content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas",
+                content = @Content),
+        @ApiResponse(responseCode = "403", description = "Usuário inativo",
+                content = @Content),
+        @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+                content = @Content)
+    })
     @PostMapping("/login")
     public Mono<ResponseEntity<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         log.info("POST /api/auth/login - Login attempt for: {}", request.getEmail());
