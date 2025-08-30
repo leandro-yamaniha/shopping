@@ -1,0 +1,45 @@
+# Configurações JVM otimizadas com G1GC (Baseline)
+# Heap Memory
+-Xms1g
+-Xmx4g
+-XX:NewRatio=1
+-XX:SurvivorRatio=8
+
+# G1 Garbage Collector (Low Latency)
+-XX:+UseG1GC
+-XX:MaxGCPauseMillis=100
+-XX:G1HeapRegionSize=16m
+-XX:G1ReservePercent=25
+-XX:InitiatingHeapOccupancyPercent=30
+-XX:G1MixedGCCountTarget=8
+-XX:G1OldCSetRegionThreshold=10
+
+# Performance Tuning
+-XX:+UseStringDeduplication
+-XX:+OptimizeStringConcat
+-XX:+UseCompressedOops
+-XX:+UseCompressedClassPointers
+
+# Virtual Threads (Java 17+)
+-XX:+UnlockExperimentalVMOptions
+
+# GC Logging para análise
+-XX:+PrintGC
+-XX:+PrintGCDetails
+-XX:+PrintGCTimeStamps
+-XX:+PrintGCApplicationStoppedTime
+-XX:+UseGCLogFileRotation
+-XX:NumberOfGCLogFiles=5
+-XX:GCLogFileSize=10M
+-Xloggc:./logs/gc-g1.log
+
+# Monitoring
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=./heapdumps/g1gc/
+
+# Network Performance
+-Djava.net.preferIPv4Stack=true
+-Dsun.net.useExclusiveBind=false
+
+# Security
+-Djava.security.egd=file:/dev/./urandom
