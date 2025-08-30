@@ -1,0 +1,4 @@
+config,startup_time,initial_memory_mb,final_memory_mb,memory_growth_mb,initial_heap_mb,final_heap_mb,gc_collections,cpu_percent,requests_per_second,mean_latency_ms,p50_ms,p95_ms,p99_ms
+Java21_ZGC,3.250855000,345.87,345.87,0,119.61,1.78490534,7.0,  0.0,528.05,94.688,83,175,295
+Java21_G1GC,3.251295000,345.54,345.54,0,121.31,161.80,7.0,  0.0,551.16,90.717,84,146,181
+Java21_UltraLow,3.246622000,329.39,329.39,0,118.59,128.74,7.0,  0.0,513.02,97.462,80,194,264

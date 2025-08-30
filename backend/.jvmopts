@@ -1,0 +1,39 @@
+# JVM Options for Java 21 - Ultra Low Memory Configuration
+# Heap Memory: 96MB - 192MB
+# Optimized for Spring Boot 3.5.5 and Shopping App Backend
+
+# Heap Memory Configuration
+-Xms96m
+-Xmx192m
+
+# ZGC Ultra Low Latency (Stable in Java 21)
+-XX:+UseZGC
+-XX:+UnlockExperimentalVMOptions
+-XX:ZCollectionInterval=5
+
+# Java 21 Performance Features
+-XX:+UseStringDeduplication
+-XX:+UseCompressedOops
+-XX:+UseCompressedClassPointers
+
+# Virtual Threads (Project Loom - Stable in Java 21)
+-Djdk.virtualThreadScheduler.parallelism=4
+-Djdk.virtualThreadScheduler.maxPoolSize=64
+
+# Memory Management
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=./heapdumps/
+-XX:+ExitOnOutOfMemoryError
+
+# GC Logging
+-XX:+PrintGC
+-XX:+PrintGCDetails
+-Xloggc:./logs/gc-java21-ultra-low.log
+
+# Network and Security
+-Djava.net.preferIPv4Stack=true
+-Djava.security.egd=file:/dev/./urandom
+
+# Java 21 Specific Optimizations
+-XX:+EnableDynamicAgentLoading
+-server
