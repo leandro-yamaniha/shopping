@@ -1,9 +1,31 @@
 spring:
   application:
     name: shopping-backend
-  
+  virtual.threads.enabled: true
   profiles:
     active: dev
+  
+  # Configurações de Performance
+  webflux:
+    # Configurar timeouts otimizados
+    timeout: 30s
+    # Buffer size otimizado
+    buffer-size: 16384
+  
+  # Configurações de compressão HTTP
+  compression:
+    enabled: true
+    mime-types: 
+      - application/json
+      - application/xml
+      - text/html
+      - text/xml
+      - text/plain
+      - text/css
+      - text/javascript
+      - application/javascript
+      - application/x-javascript
+    min-response-size: 1024
 
   # R2DBC Configuration (Reactive Database)
   r2dbc:
@@ -11,10 +33,15 @@ spring:
     username: shopping_user
     password: shopping_pass
     pool:
+      # Pool de conexões otimizado para alta performance
       initial-size: 10
-      max-size: 20
+      max-size: 50
       max-idle-time: 30m
+      max-acquire-time: 60s
+      max-create-connection-time: 10s
+      max-life-time: 60m
       validation-query: SELECT 1
+      validation-depth: LOCAL
 
   # Flyway Configuration (Database Migrations)
   flyway:
@@ -57,6 +84,13 @@ management:
     export:
       prometheus:
         enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+      sla:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 500ms
 
 # Application Configuration
 app:
@@ -77,6 +111,27 @@ app:
       - "*"
     allow-credentials: true
 
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    try-it-out-enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    filter: true
+  show-actuator: true
+  group-configs:
+    - group: 'public'
+      display-name: 'Public API'
+      paths-to-match: '/api/**'
+    - group: 'actuator'
+      display-name: 'Actuator Endpoints'
+      paths-to-match: '/actuator/**'
+
 # Logging Configuration
 logging:
   level:
@@ -84,8 +139,20 @@ logging:
     org.springframework.r2dbc: DEBUG
     io.r2dbc.postgresql.QUERY: DEBUG
     io.r2dbc.postgresql.PARAM: DEBUG
+    # Servidor Undertow (Embarcado)
+    io.undertow: DEBUG
+    io.undertow.request: DEBUG
+    io.undertow.server: DEBUG
+    io.undertow.websockets: DEBUG
+    # Spring Boot Web
+    org.springframework.boot.web: DEBUG
+    org.springframework.boot.web.embedded: DEBUG
+    org.springframework.boot.web.reactive: DEBUG
+    # HTTP Requests/Responses
+    org.springframework.web.reactive: DEBUG
+    org.springframework.http: DEBUG
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 ---
@@ -147,7 +214,17 @@ app:
     secret: ${JWT_SECRET:mySecretKey123456789012345678901234567890}
     expiration: ${JWT_EXPIRATION:86400000}
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+    allowed-origins:
+      - ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - "*"
+    allow-credentials: true
 
 logging:
   level:

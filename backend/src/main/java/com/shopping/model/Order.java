@@ -74,11 +74,28 @@ public class Order {
     private LocalDateTime updatedAt;
     
     public enum OrderStatus {
-        PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, RETURNED
+        PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
     }
     
     public enum PaymentStatus {
-        PENDING, PAID, FAILED, REFUNDED, PARTIALLY_REFUNDED
+        PENDING, PAID, FAILED, REFUNDED
+    }
+    
+    // Getters and setters for enums
+    public OrderStatus getStatus() {
+        return status;
+    }
+    
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+    
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+    
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
     
     // Helper methods

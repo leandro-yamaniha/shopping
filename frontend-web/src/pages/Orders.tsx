@@ -82,9 +82,11 @@ const Orders: React.FC = () => {
           <i className="bi bi-bag-x"></i>
           <h4>No orders found</h4>
           <p>You haven't placed any orders yet.</p>
-          <Button as={Link} to="/products" variant="primary">
-            Start Shopping
-          </Button>
+          <Link to="/products">
+            <Button variant="primary">
+              Start Shopping
+            </Button>
+          </Link>
         </div>
       ) : (
         <Row>
@@ -130,14 +132,14 @@ const Orders: React.FC = () => {
                   )}
 
                   <div className="d-flex gap-2">
-                    <Button
-                      as={Link}
-                      to={`/orders/${order.id}`}
-                      variant="outline-primary"
-                      size="sm"
-                    >
-                      View Details
-                    </Button>
+                    <Link to={`/orders/${order.id}`}>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                      >
+                        View Details
+                      </Button>
+                    </Link>
                     {order.status === 'PENDING' && (
                       <Button
                         variant="outline-danger"

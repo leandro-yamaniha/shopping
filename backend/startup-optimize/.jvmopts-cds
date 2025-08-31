@@ -1,0 +1,53 @@
+# JVM Options para Class Data Sharing (CDS) - Shopping App Backend
+# Java 21 + Spring Boot 3.5.5 + Undertow
+
+# === CDS Configuration ===
+-Xshare:on
+-XX:SharedArchiveFile=shopping-app.jsa
+
+# === Memory Management ===
+-Xms512m
+-Xmx1g
+-XX:NewRatio=2
+-XX:MetaspaceSize=256m
+-XX:MaxMetaspaceSize=512m
+
+# === G1 Garbage Collector (Optimized for Java 21) ===
+-XX:+UseG1GC
+-XX:+UseStringDeduplication
+-XX:G1HeapRegionSize=16m
+-XX:MaxGCPauseMillis=200
+-XX:G1NewSizePercent=20
+-XX:G1MaxNewSizePercent=40
+-XX:InitiatingHeapOccupancyPercent=45
+-XX:G1MixedGCCountTarget=8
+-XX:G1MixedGCLiveThresholdPercent=85
+
+# === Performance Optimizations ===
+-XX:+UseCompressedOops
+-XX:+UseCompressedClassPointers
+
+# === JIT Compiler Optimizations ===
+-XX:+OptimizeStringConcat
+-XX:+DoEscapeAnalysis
+
+# === Startup Optimizations ===
+-XX:+TieredCompilation
+-XX:TieredStopAtLevel=1
+
+# === Monitoring & Diagnostics (Development) ===
+-XX:+UnlockDiagnosticVMOptions
+-Xlog:gc*:gc.log:time
+
+# === Spring Boot Specific ===
+-Dspring.output.ansi.enabled=always
+-Dspring.jmx.enabled=false
+-Dspring.main.lazy-initialization=true
+-Dspring.data.web.pageable.default-page-size=20
+
+# === Security ===
+-Djava.security.egd=file:/dev/./urandom
+
+# === Network Optimizations ===
+-Djava.net.preferIPv4Stack=true
+-Dsun.net.useExclusiveBind=false

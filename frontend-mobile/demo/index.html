@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping App Mobile - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #F2F2F7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: #F2F2F7;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .header {
+            background: #FFFFFF;
+            padding: 20px;
+            border-bottom: 1px solid #E5E5EA;
+        }
+        
+        .greeting {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1C1C1E;
+            margin-bottom: 4px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #8E8E93;
+        }
+        
+        .search-bar {
+            background: #FFFFFF;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            background: #8E8E93;
+            border-radius: 50%;
+        }
+        
+        .search-text {
+            color: #8E8E93;
+            font-size: 16px;
+        }
+        
+        .categories {
+            padding: 0 15px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1C1C1E;
+            margin-bottom: 15px;
+        }
+        
+        .categories-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .category-card {
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .category-icon {
+            width: 32px;
+            height: 32px;
+            background: #007AFF;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+        }
+        
+        .category-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1C1C1E;
+        }
+        
+        .products {
+            padding: 0 15px;
+            margin-bottom: 20px;
+        }
+        
+        .products-scroll {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .product-card {
+            background: #FFFFFF;
+            min-width: 160px;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            width: 130px;
+            height: 130px;
+            background: linear-gradient(45deg, #007AFF, #34C759);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1C1C1E;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #007AFF;
+        }
+        
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 83px;
+            background: #FFFFFF;
+            border-top: 1px solid #E5E5EA;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+        
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        
+        .tab-icon {
+            width: 24px;
+            height: 24px;
+            background: #007AFF;
+            border-radius: 4px;
+        }
+        
+        .tab-label {
+            font-size: 10px;
+            color: #007AFF;
+            font-weight: 600;
+        }
+        
+        .tab-item.inactive .tab-icon {
+            background: #8E8E93;
+        }
+        
+        .tab-item.inactive .tab-label {
+            color: #8E8E93;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #FF3B30;
+            color: white;
+            border-radius: 10px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>🔋 100%</span>
+            </div>
+            
+            <!-- Header -->
+            <div class="header">
+                <div class="greeting">Olá! 👋</div>
+                <div class="subtitle">O que você está procurando hoje?</div>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <div class="search-icon"></div>
+                <div class="search-text">Buscar produtos...</div>
+            </div>
+            
+            <!-- Categories -->
+            <div class="categories">
+                <div class="section-title">Categorias</div>
+                <div class="categories-grid">
+                    <div class="category-card">
+                        <div class="category-icon"></div>
+                        <div class="category-name">Eletrônicos</div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon" style="background: #FF3B30;"></div>
+                        <div class="category-name">Roupas</div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon" style="background: #34C759;"></div>
+                        <div class="category-name">Casa</div>
+                    </div>
+                    <div class="category-card">
+                        <div class="category-icon" style="background: #FF9500;"></div>
+                        <div class="category-name">Esportes</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Featured Products -->
+            <div class="products">
+                <div class="section-title">Produtos em Destaque</div>
+                <div class="products-scroll">
+                    <div class="product-card">
+                        <div class="product-image">iPhone</div>
+                        <div class="product-name">iPhone 15 Pro</div>
+                        <div class="product-price">R$ 8.999,99</div>
+                    </div>
+                    <div class="product-card">
+                        <div class="product-image" style="background: linear-gradient(45deg, #34C759, #30D158);">MacBook</div>
+                        <div class="product-name">MacBook Air M2</div>
+                        <div class="product-price">R$ 12.999,99</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <div class="tab-item">
+                    <div class="tab-icon"></div>
+                    <div class="tab-label">Início</div>
+                </div>
+                <div class="tab-item inactive">
+                    <div class="tab-icon"></div>
+                    <div class="tab-label">Produtos</div>
+                </div>
+                <div class="tab-item inactive" style="position: relative;">
+                    <div class="tab-icon"></div>
+                    <div class="tab-label">Carrinho</div>
+                    <div class="cart-badge">2</div>
+                </div>
+                <div class="tab-item inactive">
+                    <div class="tab-icon"></div>
+                    <div class="tab-label">Pedidos</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simular interatividade
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.add('inactive'));
+                tab.classList.remove('inactive');
+            });
+        });
+        
+        document.querySelectorAll('.category-card, .product-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>

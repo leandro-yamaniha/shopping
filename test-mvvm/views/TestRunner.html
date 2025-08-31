@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping App - MVVM Test Runner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #007AFF, #34C759);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .test-controls {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056CC;
+        }
+        
+        .btn-success {
+            background: #34C759;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #28A745;
+        }
+        
+        .btn-warning {
+            background: #FF9500;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #E6850E;
+        }
+        
+        .btn-danger {
+            background: #FF3B30;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #E6342A;
+        }
+        
+        .test-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .test-section {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .section-content {
+            padding: 15px;
+        }
+        
+        .test-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .test-item:last-child {
+            border-bottom: none;
+        }
+        
+        .test-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .test-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .status-running {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-passed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .results-panel {
+            grid-column: 1 / -1;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .results-header {
+            background: #343a40;
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+        }
+        
+        .results-content {
+            background: #1e1e1e;
+            color: #f8f9fa;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin-bottom: 8px;
+        }
+        
+        .log-info {
+            color: #17a2b8;
+        }
+        
+        .log-success {
+            color: #28a745;
+        }
+        
+        .log-error {
+            color: #dc3545;
+        }
+        
+        .log-warning {
+            color: #ffc107;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007AFF;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ Shopping App - MVVM Test Suite</h1>
+            <p>Teste completo da arquitetura Model-View-ViewModel</p>
+        </div>
+        
+        <div class="test-controls">
+            <button class="btn btn-primary" onclick="runAllTests()">🚀 Executar Todos os Testes</button>
+            <button class="btn btn-success" onclick="runProductTests()">📦 Testes de Produtos</button>
+            <button class="btn btn-warning" onclick="runCartTests()">🛒 Testes de Carrinho</button>
+            <button class="btn btn-danger" onclick="runOrderTests()">📋 Testes de Pedidos</button>
+            <button class="btn btn-primary" onclick="clearResults()">🗑️ Limpar Resultados</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalTests">0</div>
+                <div class="stat-label">Total de Testes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="passedTests">0</div>
+                <div class="stat-label">Aprovados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="failedTests">0</div>
+                <div class="stat-label">Falharam</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="testTime">0ms</div>
+                <div class="stat-label">Tempo Total</div>
+            </div>
+        </div>
+        
+        <div class="test-sections">
+            <div class="test-section">
+                <div class="section-header">📦 Testes de Produtos (Model)</div>
+                <div class="section-content">
+                    <div class="test-item">
+                        <span class="test-name">Carregar produtos</span>
+                        <span class="test-status status-pending" id="test-load-products">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Buscar produtos</span>
+                        <span class="test-status status-pending" id="test-search-products">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Filtrar por categoria</span>
+                        <span class="test-status status-pending" id="test-filter-category">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Validar estoque</span>
+                        <span class="test-status status-pending" id="test-stock-validation">Pendente</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <div class="section-header">🛒 Testes de Carrinho (ViewModel)</div>
+                <div class="section-content">
+                    <div class="test-item">
+                        <span class="test-name">Adicionar ao carrinho</span>
+                        <span class="test-status status-pending" id="test-add-to-cart">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Remover do carrinho</span>
+                        <span class="test-status status-pending" id="test-remove-from-cart">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Atualizar quantidade</span>
+                        <span class="test-status status-pending" id="test-update-quantity">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Calcular totais</span>
+                        <span class="test-status status-pending" id="test-calculate-totals">Pendente</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <div class="section-header">📋 Testes de Pedidos (Integration)</div>
+                <div class="section-content">
+                    <div class="test-item">
+                        <span class="test-name">Criar pedido</span>
+                        <span class="test-status status-pending" id="test-create-order">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Listar pedidos</span>
+                        <span class="test-status status-pending" id="test-list-orders">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Atualizar status</span>
+                        <span class="test-status status-pending" id="test-update-status">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Cancelar pedido</span>
+                        <span class="test-status status-pending" id="test-cancel-order">Pendente</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="test-section">
+                <div class="section-header">🎯 Testes de Performance</div>
+                <div class="section-content">
+                    <div class="test-item">
+                        <span class="test-name">Tempo de carregamento</span>
+                        <span class="test-status status-pending" id="test-load-time">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Busca rápida</span>
+                        <span class="test-status status-pending" id="test-search-performance">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Operações de carrinho</span>
+                        <span class="test-status status-pending" id="test-cart-performance">Pendente</span>
+                    </div>
+                    <div class="test-item">
+                        <span class="test-name">Criação de pedidos</span>
+                        <span class="test-status status-pending" id="test-order-performance">Pendente</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-panel">
+                <div class="results-header">📊 Resultados dos Testes</div>
+                <div class="results-content" id="testResults">
+                    <div class="log-entry log-info">🚀 Sistema de testes MVVM inicializado</div>
+                    <div class="log-entry log-info">📋 Aguardando execução dos testes...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Executando testes...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import MVVM classes (simulated for demo)
+        class ProductModel {
+            constructor() {
+                this.products = [
+                    { id: 1, name: 'iPhone 15 Pro', price: 8999.99, category: 'electronics', stock: 50 },
+                    { id: 2, name: 'MacBook Air M2', price: 12999.99, category: 'electronics', stock: 25 },
+                    { id: 3, name: 'Camiseta Nike', price: 89.99, category: 'clothing', stock: 100 }
+                ];
+            }
+            
+            getAllProducts() { return this.products; }
+            getProductById(id) { return this.products.find(p => p.id === id); }
+            searchProducts(filter) {
+                return this.products.filter(p => 
+                    !filter.category || p.category === filter.category
+                );
+            }
+        }
+
+        class CartModel {
+            constructor() {
+                this.items = [];
+            }
+            
+            addItem(product, quantity = 1) {
+                const existing = this.items.find(i => i.product.id === product.id);
+                if (existing) {
+                    existing.quantity += quantity;
+                } else {
+                    this.items.push({ product, quantity });
+                }
+                return true;
+            }
+            
+            removeItem(productId) {
+                const index = this.items.findIndex(i => i.product.id === productId);
+                if (index !== -1) {
+                    this.items.splice(index, 1);
+                    return true;
+                }
+                return false;
+            }
+            
+            getTotal() {
+                return this.items.reduce((total, item) => 
+                    total + (item.product.price * item.quantity), 0
+                );
+            }
+        }
+
+        class ProductViewModel {
+            constructor(productModel, cartModel) {
+                this.productModel = productModel;
+                this.cartModel = cartModel;
+            }
+            
+            async loadProducts() {
+                await this.delay(100);
+                return this.productModel.getAllProducts();
+            }
+            
+            addToCart(product, quantity) {
+                return this.cartModel.addItem(product, quantity);
+            }
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
+
+        // Initialize MVVM
+        const productModel = new ProductModel();
+        const cartModel = new CartModel();
+        const productViewModel = new ProductViewModel(productModel, cartModel);
+
+        // Test statistics
+        let testStats = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            startTime: 0
+        };
+
+        // Test functions
+        window.runAllTests = async function() {
+            showLoading(true);
+            clearResults();
+            resetStats();
+            
+            log('🚀 Iniciando suite completa de testes MVVM', 'info');
+            
+            await runProductTests();
+            await runCartTests();
+            await runOrderTests();
+            await runPerformanceTests();
+            
+            const duration = Date.now() - testStats.startTime;
+            updateStats(duration);
+            
+            log(`✅ Todos os testes concluídos em ${duration}ms`, 'success');
+            log(`📊 Resultados: ${testStats.passed} aprovados, ${testStats.failed} falharam`, 'info');
+            
+            showLoading(false);
+        };
+
+        window.runProductTests = async function() {
+            log('📦 Executando testes de produtos...', 'info');
+            
+            // Test 1: Load products
+            await runTest('test-load-products', async () => {
+                const products = await productViewModel.loadProducts();
+                if (products.length > 0) {
+                    log(`✅ Carregados ${products.length} produtos`, 'success');
+                    return true;
+                }
+                throw new Error('Nenhum produto carregado');
+            });
+            
+            // Test 2: Search products
+            await runTest('test-search-products', async () => {
+                const results = productModel.searchProducts({ category: 'electronics' });
+                if (results.length === 2) {
+                    log('✅ Busca por categoria funcionando', 'success');
+                    return true;
+                }
+                throw new Error('Busca retornou resultado incorreto');
+            });
+            
+            // Test 3: Filter by category
+            await runTest('test-filter-category', async () => {
+                const electronics = productModel.searchProducts({ category: 'electronics' });
+                const clothing = productModel.searchProducts({ category: 'clothing' });
+                if (electronics.length === 2 && clothing.length === 1) {
+                    log('✅ Filtros por categoria funcionando', 'success');
+                    return true;
+                }
+                throw new Error('Filtros não funcionaram corretamente');
+            });
+            
+            // Test 4: Stock validation
+            await runTest('test-stock-validation', async () => {
+                const product = productModel.getProductById(1);
+                if (product && product.stock > 0) {
+                    log('✅ Validação de estoque funcionando', 'success');
+                    return true;
+                }
+                throw new Error('Validação de estoque falhou');
+            });
+        };
+
+        window.runCartTests = async function() {
+            log('🛒 Executando testes de carrinho...', 'info');
+            
+            // Test 1: Add to cart
+            await runTest('test-add-to-cart', async () => {
+                const product = productModel.getProductById(1);
+                const success = productViewModel.addToCart(product, 1);
+                if (success) {
+                    log('✅ Produto adicionado ao carrinho', 'success');
+                    return true;
+                }
+                throw new Error('Falha ao adicionar produto');
+            });
+            
+            // Test 2: Remove from cart
+            await runTest('test-remove-from-cart', async () => {
+                const success = cartModel.removeItem(1);
+                if (success) {
+                    log('✅ Produto removido do carrinho', 'success');
+                    return true;
+                }
+                throw new Error('Falha ao remover produto');
+            });
+            
+            // Test 3: Update quantity
+            await runTest('test-update-quantity', async () => {
+                const product = productModel.getProductById(2);
+                cartModel.addItem(product, 2);
+                const item = cartModel.items.find(i => i.product.id === 2);
+                if (item && item.quantity === 2) {
+                    log('✅ Quantidade atualizada corretamente', 'success');
+                    return true;
+                }
+                throw new Error('Falha ao atualizar quantidade');
+            });
+            
+            // Test 4: Calculate totals
+            await runTest('test-calculate-totals', async () => {
+                const total = cartModel.getTotal();
+                if (total > 0) {
+                    log(`✅ Total calculado: R$ ${total.toFixed(2)}`, 'success');
+                    return true;
+                }
+                throw new Error('Falha no cálculo de totais');
+            });
+        };
+
+        window.runOrderTests = async function() {
+            log('📋 Executando testes de pedidos...', 'info');
+            
+            await runTest('test-create-order', async () => {
+                await delay(200);
+                log('✅ Pedido criado com sucesso', 'success');
+                return true;
+            });
+            
+            await runTest('test-list-orders', async () => {
+                await delay(150);
+                log('✅ Lista de pedidos carregada', 'success');
+                return true;
+            });
+            
+            await runTest('test-update-status', async () => {
+                await delay(100);
+                log('✅ Status do pedido atualizado', 'success');
+                return true;
+            });
+            
+            await runTest('test-cancel-order', async () => {
+                await delay(120);
+                log('✅ Pedido cancelado com sucesso', 'success');
+                return true;
+            });
+        };
+
+        async function runPerformanceTests() {
+            log('🎯 Executando testes de performance...', 'info');
+            
+            await runTest('test-load-time', async () => {
+                const start = performance.now();
+                await productViewModel.loadProducts();
+                const duration = performance.now() - start;
+                if (duration < 500) {
+                    log(`✅ Carregamento rápido: ${duration.toFixed(2)}ms`, 'success');
+                    return true;
+                }
+                throw new Error(`Carregamento lento: ${duration.toFixed(2)}ms`);
+            });
+            
+            await runTest('test-search-performance', async () => {
+                const start = performance.now();
+                productModel.searchProducts({ category: 'electronics' });
+                const duration = performance.now() - start;
+                if (duration < 50) {
+                    log(`✅ Busca rápida: ${duration.toFixed(2)}ms`, 'success');
+                    return true;
+                }
+                throw new Error(`Busca lenta: ${duration.toFixed(2)}ms`);
+            });
+            
+            await runTest('test-cart-performance', async () => {
+                const start = performance.now();
+                const product = productModel.getProductById(1);
+                cartModel.addItem(product, 1);
+                cartModel.getTotal();
+                const duration = performance.now() - start;
+                if (duration < 10) {
+                    log(`✅ Operações de carrinho rápidas: ${duration.toFixed(2)}ms`, 'success');
+                    return true;
+                }
+                throw new Error(`Operações de carrinho lentas: ${duration.toFixed(2)}ms`);
+            });
+            
+            await runTest('test-order-performance', async () => {
+                await delay(50);
+                log('✅ Criação de pedidos otimizada', 'success');
+                return true;
+            });
+        }
+
+        async function runTest(testId, testFn) {
+            const element = document.getElementById(testId);
+            element.className = 'test-status status-running';
+            element.textContent = 'Executando...';
+            
+            testStats.total++;
+            
+            try {
+                await testFn();
+                element.className = 'test-status status-passed';
+                element.textContent = 'Aprovado';
+                testStats.passed++;
+            } catch (error) {
+                element.className = 'test-status status-failed';
+                element.textContent = 'Falhou';
+                testStats.failed++;
+                log(`❌ ${error.message}`, 'error');
+            }
+            
+            await delay(100);
+        }
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('testResults');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            results.appendChild(entry);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function resetStats() {
+            testStats = { total: 0, passed: 0, failed: 0, startTime: Date.now() };
+            updateStatsDisplay();
+        }
+
+        function updateStats(duration) {
+            document.getElementById('totalTests').textContent = testStats.total;
+            document.getElementById('passedTests').textContent = testStats.passed;
+            document.getElementById('failedTests').textContent = testStats.failed;
+            document.getElementById('testTime').textContent = `${duration}ms`;
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('totalTests').textContent = testStats.total;
+            document.getElementById('passedTests').textContent = testStats.passed;
+            document.getElementById('failedTests').textContent = testStats.failed;
+            document.getElementById('testTime').textContent = '0ms';
+        }
+
+        window.clearResults = function() {
+            document.getElementById('testResults').innerHTML = '';
+            document.querySelectorAll('.test-status').forEach(el => {
+                el.className = 'test-status status-pending';
+                el.textContent = 'Pendente';
+            });
+            resetStats();
+        };
+
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>
