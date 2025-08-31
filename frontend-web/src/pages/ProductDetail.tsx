@@ -91,7 +91,7 @@ const ProductDetail: React.FC = () => {
             
             <div className="mb-3">
               <span className="product-price me-3">${product.price}</span>
-              {product.isActive ? (
+              {product.active ? (
                 <Badge bg="success">Available</Badge>
               ) : (
                 <Badge bg="danger">Unavailable</Badge>
@@ -111,17 +111,6 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
-            {product.weight && (
-              <div className="mb-3">
-                <strong>Weight: </strong>{product.weight} kg
-              </div>
-            )}
-
-            {product.dimensions && (
-              <div className="mb-3">
-                <strong>Dimensions: </strong>{product.dimensions}
-              </div>
-            )}
 
             <div className="mb-4">
               <h5>Description</h5>

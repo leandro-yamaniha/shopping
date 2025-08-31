@@ -169,14 +169,14 @@ const Products: React.FC = () => {
                     </small>
                   </div>
                   <div className="d-flex gap-2">
-                    <Button
-                      as={Link}
-                      to={`/products/${product.id}`}
-                      variant="outline-primary"
-                      size="sm"
-                    >
-                      View Details
-                    </Button>
+                    <Link to={`/products/${product.id}`}>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                      >
+                        View Details
+                      </Button>
+                    </Link>
                     <Button
                       variant="primary"
                       size="sm"

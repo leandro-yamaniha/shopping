@@ -35,12 +35,16 @@ const Home: React.FC = () => {
                 Discover amazing products with our reactive shopping experience. 
                 Built with Spring Boot 4, Java 21, and React.
               </p>
-              <Button as={Link} to="/products" size="lg" className="me-3">
-                Shop Now
-              </Button>
-              <Button as={Link} to="/register" variant="outline-light" size="lg">
-                Join Us
-              </Button>
+              <Link to="/products">
+                <Button size="lg" className="me-3">
+                  Shop Now
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button variant="outline-light" size="lg">
+                  Join Us
+                </Button>
+              </Link>
             </Col>
           </Row>
         </Container>
@@ -77,14 +81,14 @@ const Home: React.FC = () => {
                     </Card.Text>
                     <div className="d-flex justify-content-between align-items-center">
                       <span className="product-price">${product.price}</span>
-                      <Button
-                        as={Link}
-                        to={`/products/${product.id}`}
-                        variant="outline-primary"
-                        size="sm"
-                      >
-                        View Details
-                      </Button>
+                      <Link to={`/products/${product.id}`}>
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                        >
+                          View Details
+                        </Button>
+                      </Link>
                     </div>
                   </Card.Body>
                 </Card>

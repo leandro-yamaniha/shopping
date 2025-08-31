@@ -1,5 +1,5 @@
-# Multi-stage Dockerfile com CDS + Layered JARs para Shopping App Backend
-# Java 21 + Spring Boot 3.5.5 + Class Data Sharing + Layered JARs
+# Simple Dockerfile com Layered JARs (sem CDS)
+# Java 21 + Spring Boot 3.5.5 + Layered JARs
 
 FROM eclipse-temurin:21-jdk-alpine AS builder
 
@@ -22,7 +22,7 @@ FROM eclipse-temurin:21-jre-alpine
 
 # Metadados
 LABEL maintainer="Shopping App Team"
-LABEL description="Shopping App Backend with CDS optimization"
+LABEL description="Shopping App Backend with Layered JARs"
 LABEL version="1.0.0"
 
 # Criar usuário não-root
@@ -47,20 +47,11 @@ COPY --from=builder /app/spring-boot-loader/ ./
 COPY --from=builder /app/snapshot-dependencies/ ./
 COPY --from=builder /app/application/ ./
 
-# Copiar scripts para geração de CDS no runtime
-COPY docker/generate-cds-docker.sh ./generate-cds.sh
-COPY docker/cds-startup-docker.sh cds-startup.sh
-COPY startup-optimize/.jvmopts-cds .
-
-# Instalar dependências para CDS
-RUN apk add --no-cache bash coreutils
-
-# Gerar CDS no ambiente de runtime (mesmo JRE)
-RUN chmod +x generate-cds.sh && \
-    ./generate-cds.sh
+# Copiar script de inicialização
+COPY docker/startup-simple.sh startup.sh
 
 # Configurar permissões
-RUN chmod +x cds-startup.sh && \
+RUN chmod +x startup.sh && \
     chown -R appuser:appgroup /app
 
 # Mudar para usuário não-root
@@ -78,5 +69,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8080/actuator/health || exit 1
 
-# Comando de inicialização com CDS
-CMD ["./cds-startup.sh"]
+# Comando de inicialização
+CMD ["./startup.sh"]

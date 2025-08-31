@@ -62,9 +62,11 @@ const Cart: React.FC = () => {
           <i className="bi bi-cart-x"></i>
           <h4>Your cart is empty</h4>
           <p>Add some products to get started!</p>
-          <Button as={Link} to="/products" variant="primary">
-            Continue Shopping
-          </Button>
+          <Link to="/products">
+            <Button variant="primary">
+              Continue Shopping
+            </Button>
+          </Link>
         </div>
       ) : (
         <Row>
@@ -146,9 +148,11 @@ const Cart: React.FC = () => {
               <Button variant="outline-secondary" onClick={handleClearCart}>
                 Clear Cart
               </Button>
-              <Button as={Link} to="/products" variant="outline-primary" className="ms-2">
-                Continue Shopping
-              </Button>
+              <Link to="/products">
+                <Button variant="outline-primary" className="ms-2">
+                  Continue Shopping
+                </Button>
+              </Link>
             </div>
           </Col>
 
