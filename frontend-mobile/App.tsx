@@ -6,11 +6,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 
 import { CartProvider } from './src/context/CartContext';
+import { AuthProvider, useAuth } from './src/context/AuthContext';
+import LoadingSpinner from './src/components/LoadingSpinner';
 import HomeScreen from './src/screens/HomeScreen';
 import ProductsScreen from './src/screens/ProductsScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
 import CartScreen from './src/screens/CartScreen';
 import OrdersScreen from './src/screens/OrdersScreen';
+import { LoginScreen } from './src/screens/LoginScreen';
+import { RegisterScreen } from './src/screens/RegisterScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,6 +32,15 @@ function ProductsStack() {
         component={ProductDetailScreen} 
         options={{ title: 'Detalhes do Produto' }}
       />
+    </Stack.Navigator>
+  );
+}
+
+function AuthStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>
   );
 }
@@ -82,13 +95,25 @@ function TabNavigator() {
   );
 }
 
+function AppNavigator() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  return isAuthenticated ? <TabNavigator /> : <AuthStack />;
+}
+
 export default function App() {
   return (
-    <CartProvider>
-      <NavigationContainer>
-        <StatusBar style="auto" />
-        <TabNavigator />
-      </NavigationContainer>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <NavigationContainer>
+          <StatusBar style="auto" />
+          <AppNavigator />
+        </NavigationContainer>
+      </CartProvider>
+    </AuthProvider>
   );
 }

@@ -2,17 +2,25 @@ package com.shopping.controller;
 
 import com.shopping.dto.CartSummaryDto;
 import com.shopping.dto.ProductDto;
+import com.shopping.dto.LoginRequest;
+import com.shopping.dto.LoginResponse;
+import com.shopping.dto.RegisterRequest;
 import com.shopping.model.Product;
 import com.shopping.model.CartItem;
+import com.shopping.model.User;
 import com.shopping.service.ProductService;
 import com.shopping.service.ShoppingCartService;
+import com.shopping.service.UserService;
+import com.shopping.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import jakarta.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +34,8 @@ public class MobileApiController {
     
     private final ProductService productService;
     private final ShoppingCartService cartService;
+    private final UserService userService;
+    private final JwtService jwtService;
     
     // Endpoints otimizados para mobile
     
@@ -152,6 +162,95 @@ public class MobileApiController {
     @GetMapping("/health")
     public Mono<ResponseEntity<String>> healthCheck() {
         return Mono.just(ResponseEntity.ok("Mobile API is healthy"));
+    }
+    
+    // Mobile Authentication Endpoints
+    @PostMapping("/auth/login")
+    public Mono<ResponseEntity<LoginResponse>> mobileLogin(@Valid @RequestBody LoginRequest request) {
+        log.info("POST /api/mobile/auth/login - Mobile login for: {}", request.getEmail());
+        
+        return userService.getUserByEmail(request.getEmail())
+            .flatMap(user -> {
+                return userService.validatePassword(request.getEmail(), request.getPassword())
+                    .flatMap(isValid -> {
+                        if (!isValid) {
+                            return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).<LoginResponse>build());
+                        }
+                        
+                        if (!user.getIsActive()) {
+                            return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).<LoginResponse>build());
+                        }
+                        
+                        String token = jwtService.generateToken(
+                            user.getId(),
+                            user.getEmail(),
+                            user.getRole().name()
+                        );
+                        
+                        LoginResponse response = LoginResponse.builder()
+                            .token(token)
+                            .userId(user.getId())
+                            .email(user.getEmail())
+                            .firstName(user.getFirstName())
+                            .lastName(user.getLastName())
+                            .role(user.getRole().name())
+                            .build();
+                        
+                        return Mono.just(ResponseEntity.ok(response));
+                    });
+            })
+            .defaultIfEmpty(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+    
+    @PostMapping("/auth/register")
+    public Mono<ResponseEntity<LoginResponse>> mobileRegister(@Valid @RequestBody RegisterRequest request) {
+        log.info("POST /api/mobile/auth/register - Mobile register for: {}", request.getEmail());
+        
+        User user = User.builder()
+            .email(request.getEmail())
+            .passwordHash(request.getPassword())
+            .firstName(request.getFirstName())
+            .lastName(request.getLastName())
+            .phone(request.getPhone())
+            .role(User.UserRole.CUSTOMER)
+            .isActive(true)
+            .build();
+        
+        return userService.createUser(user)
+            .map(createdUser -> {
+                String token = jwtService.generateToken(
+                    createdUser.getId(),
+                    createdUser.getEmail(),
+                    createdUser.getRole().name()
+                );
+                
+                LoginResponse response = LoginResponse.builder()
+                    .token(token)
+                    .userId(createdUser.getId())
+                    .email(createdUser.getEmail())
+                    .firstName(createdUser.getFirstName())
+                    .lastName(createdUser.getLastName())
+                    .role(createdUser.getRole().name())
+                    .build();
+                
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            })
+            .onErrorReturn(IllegalArgumentException.class, 
+                ResponseEntity.badRequest().build());
+    }
+    
+    @PostMapping("/auth/validate")
+    public Mono<ResponseEntity<Boolean>> validateMobileToken(@RequestHeader("Authorization") String authHeader) {
+        log.info("POST /api/mobile/auth/validate - Validating mobile token");
+        
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Mono.just(ResponseEntity.ok(false));
+        }
+        
+        String token = authHeader.substring(7);
+        boolean isValid = jwtService.isTokenValid(token);
+        
+        return Mono.just(ResponseEntity.ok(isValid));
     }
     
     // Helper methods

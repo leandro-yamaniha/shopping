@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Product } from '../context/CartContext';
+import { authService } from './authService';
 
 // Configuração base da API
 const API_BASE_URL = __DEV__ 
@@ -14,13 +15,10 @@ const api = axios.create({
   },
 });
 
-// Interceptor para adicionar token de autenticação (quando implementado)
+// Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    // const token = AsyncStorage.getItem('authToken');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    // Token will be set via setAuthToken function
     return config;
   },
   (error) => {
@@ -28,12 +26,14 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para tratamento de respostas
+// Response interceptor to handle auth errors
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid, could trigger logout here
+      console.warn('Authentication error, token may be expired');
+    }
     console.error('API Error:', error);
     return Promise.reject(error);
   }
@@ -121,38 +121,16 @@ export const orderService = {
   },
 };
 
-export const authService = {
-  // Login
-  login: async (email: string, password: string): Promise<any> => {
-    try {
-      const response = await api.post('/auth/login', { email, password });
-      return response.data;
-    } catch (error) {
-      console.error('Error logging in:', error);
-      throw error;
-    }
-  },
+// Token management for API requests
+let authToken: string | null = null;
 
-  // Registro
-  register: async (userData: any): Promise<any> => {
-    try {
-      const response = await api.post('/auth/register', userData);
-      return response.data;
-    } catch (error) {
-      console.error('Error registering:', error);
-      throw error;
-    }
-  },
-
-  // Logout
-  logout: async (): Promise<void> => {
-    try {
-      await api.post('/auth/logout');
-    } catch (error) {
-      console.error('Error logging out:', error);
-      throw error;
-    }
-  },
+export const setAuthToken = (token: string | null) => {
+  authToken = token;
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+  }
 };
 
 export default api;

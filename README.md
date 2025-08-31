@@ -85,6 +85,16 @@ shopping-app/
 - **Sistema de pedidos** com fluxo completo
 - **APIs mobile-otimizadas** com DTOs específicos
 - **Busca e filtros** em tempo real
+
+### 🔐 Autenticação JWT
+- **Sistema completo de autenticação** com JWT tokens
+- **Login/Register** com validação e criptografia BCrypt
+- **Sessões persistentes** com AsyncStorage no mobile
+- **Middleware de autenticação** automático nas requisições
+- **Telas de login/registro** com UI moderna no React Native
+- **Gerenciamento de estado** com AuthContext
+- **Cache de tokens** para performance otimizada
+- **Expiração automática** de tokens (24h)
 - **Gerenciamento de estado** reativo
 
 ### ✅ Recursos Avançados
