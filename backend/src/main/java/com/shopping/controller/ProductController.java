@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:19006"})
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:19006", "http://127.0.0.1:8090", "http://localhost:8090"})
 public class ProductController {
     
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);

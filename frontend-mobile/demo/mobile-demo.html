@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping App - Mobile Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .phone-frame {
+            max-width: 375px;
+            margin: 0 auto;
+            background: #000;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .screen {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            min-height: 600px;
+        }
+        
+        .status-bar {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .header {
+            background: #6366f1;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .demo-section {
+            margin-bottom: 30px;
+        }
+        
+        .demo-section h2 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .api-test {
+            background: #f3f4f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .api-test h3 {
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .test-button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .test-button:hover {
+            background: #5855eb;
+        }
+        
+        .test-result {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            color: #059669;
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+        }
+        
+        .error {
+            color: #dc2626;
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .product-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .product-card h4 {
+            color: #1f2937;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .product-card .price {
+            color: #6366f1;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 20px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: #10b981;
+        }
+        
+        .status-offline {
+            background: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame">
+        <div class="screen">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>Shopping Demo</span>
+                <span>100%</span>
+            </div>
+            
+            <div class="header">
+                <h1>🛍️ Shopping App</h1>
+                <p>Mobile Demo - Backend Integration</p>
+            </div>
+            
+            <div class="content">
+                <div class="demo-section">
+                    <h2>🔗 API Connection Status</h2>
+                    <div class="api-test">
+                        <h3><span id="backend-status" class="status-indicator status-offline"></span>Backend API</h3>
+                        <button class="test-button" onclick="testBackendHealth()">Test Connection</button>
+                        <div id="backend-result" class="test-result" style="display: none;"></div>
+                    </div>
+                </div>
+                
+                <div class="demo-section">
+                    <h2>📦 Products API</h2>
+                    <div class="api-test">
+                        <h3>Load Products</h3>
+                        <button class="test-button" onclick="loadProducts()">Fetch Products</button>
+                        <button class="test-button" onclick="searchProducts()">Search "Phone"</button>
+                        <div id="products-result" class="test-result" style="display: none;"></div>
+                        <div id="products-grid" class="product-grid"></div>
+                    </div>
+                </div>
+                
+                <div class="demo-section">
+                    <h2>🏷️ Categories API</h2>
+                    <div class="api-test">
+                        <h3>Load Categories</h3>
+                        <button class="test-button" onclick="loadCategories()">Fetch Categories</button>
+                        <div id="categories-result" class="test-result" style="display: none;"></div>
+                    </div>
+                </div>
+                
+                <div class="demo-section">
+                    <h2>📱 Mobile Features</h2>
+                    <div class="api-test">
+                        <h3>React Native Components</h3>
+                        <p style="color: #6b7280; font-size: 14px; margin-bottom: 10px;">
+                            This demo simulates the mobile app functionality using the same APIs.
+                        </p>
+                        <button class="test-button" onclick="simulateCartAdd()">Add to Cart</button>
+                        <button class="test-button" onclick="simulateCheckout()">Checkout Flow</button>
+                        <div id="mobile-result" class="test-result" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/mobile';
+        
+        async function makeRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                throw error;
+            }
+        }
+        
+        async function testBackendHealth() {
+            const resultDiv = document.getElementById('backend-result');
+            const statusIndicator = document.getElementById('backend-status');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result';
+            resultDiv.textContent = 'Testing connection...';
+            
+            try {
+                const result = await makeRequest(`${API_BASE}/health`);
+                resultDiv.className = 'test-result success';
+                resultDiv.textContent = `✅ ${result}`;
+                statusIndicator.className = 'status-indicator status-online';
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.textContent = `❌ ${error.message}`;
+                statusIndicator.className = 'status-indicator status-offline';
+            }
+        }
+        
+        async function loadProducts() {
+            const resultDiv = document.getElementById('products-result');
+            const gridDiv = document.getElementById('products-grid');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result';
+            resultDiv.textContent = 'Loading products...';
+            gridDiv.innerHTML = '';
+            
+            try {
+                const products = await makeRequest(`${API_BASE}/products`);
+                resultDiv.className = 'test-result success';
+                resultDiv.textContent = `✅ Loaded ${products.length} products`;
+                
+                // Display first 4 products
+                products.slice(0, 4).forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <h4>${product.name}</h4>
+                        <p class="price">$${product.price}</p>
+                        <p style="font-size: 12px; color: #6b7280;">Stock: ${product.stock}</p>
+                    `;
+                    gridDiv.appendChild(card);
+                });
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.textContent = `❌ ${error.message}`;
+            }
+        }
+        
+        async function searchProducts() {
+            const resultDiv = document.getElementById('products-result');
+            const gridDiv = document.getElementById('products-grid');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result';
+            resultDiv.textContent = 'Searching for "phone"...';
+            gridDiv.innerHTML = '';
+            
+            try {
+                const products = await makeRequest(`${API_BASE}/products?search=phone`);
+                resultDiv.className = 'test-result success';
+                resultDiv.textContent = `✅ Found ${products.length} products matching "phone"`;
+                
+                products.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <h4>${product.name}</h4>
+                        <p class="price">$${product.price}</p>
+                        <p style="font-size: 12px; color: #6b7280;">Stock: ${product.stock}</p>
+                    `;
+                    gridDiv.appendChild(card);
+                });
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.textContent = `❌ ${error.message}`;
+            }
+        }
+        
+        async function loadCategories() {
+            const resultDiv = document.getElementById('categories-result');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result';
+            resultDiv.textContent = 'Loading categories...';
+            
+            try {
+                const categories = await makeRequest(`${API_BASE}/categories`);
+                resultDiv.className = 'test-result success';
+                resultDiv.textContent = `✅ Loaded ${categories.length} categories:\n${categories.slice(0, 5).join(', ')}${categories.length > 5 ? '...' : ''}`;
+            } catch (error) {
+                resultDiv.className = 'test-result error';
+                resultDiv.textDiv = `❌ ${error.message}`;
+            }
+        }
+        
+        function simulateCartAdd() {
+            const resultDiv = document.getElementById('mobile-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result success';
+            resultDiv.textContent = '✅ Product added to cart! (Simulated)\n📱 In the real app, this would use React Native navigation and state management.';
+        }
+        
+        function simulateCheckout() {
+            const resultDiv = document.getElementById('mobile-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'test-result success';
+            resultDiv.textContent = '✅ Checkout flow initiated! (Simulated)\n📱 In the real app, this would navigate to payment screens using React Navigation.';
+        }
+        
+        // Auto-test backend on load
+        window.addEventListener('load', () => {
+            setTimeout(testBackendHealth, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -96,11 +96,31 @@ cd frontend-mobile && npx expo start
 
 ## 🎯 Status do Projeto
 - [x] Estrutura inicial
+- [x] Docker otimizado (CDS, layered JARs)
 - [ ] Backend reativo
 - [ ] Modelos de dados
 - [ ] APIs REST reativas
-- [ ] Frontend Web
-- [ ] Frontend Mobile
+- [x] Frontend Web (React + TypeScript)
+- [x] Frontend Mobile (React Native + Expo)
 - [ ] Autenticação
 - [ ] Testes
 - [ ] Deploy
+
+## 📱 Frontend Mobile - React Native
+
+### ✅ Implementado
+- **Navegação completa** com React Navigation (tabs + stack)
+- **Telas principais**: Home, Products, ProductDetail, Cart, Orders
+- **Carrinho reativo** com Context API
+- **Componentes reutilizáveis**: ProductCard, LoadingSpinner, EmptyState
+- **Serviços de API** configurados para integração com backend
+- **UI/UX mobile otimizada** com design system consistente
+
+### 🚀 Como executar o Mobile
+```bash
+cd frontend-mobile
+npm install
+npx expo start
+```
+
+Escaneie o QR code com Expo Go (Android) ou Camera (iOS)
